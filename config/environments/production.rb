@@ -16,17 +16,17 @@ Rails.application.configure do
   config.consider_all_requests_local = false
   config.action_controller.perform_caching = true
 
-  # Ensures that a master key has been made available in ENV["RAILS_MASTER_KEY"], config/master.key, or an environment
-  # key such as config/credentials/production.key. This key is used to decrypt credentials (and other encrypted files).
+  # Ensures that a master key has been made available in either ENV["RAILS_MASTER_KEY"]
+  # or in config/master.key. This key is used to decrypt credentials (and other encrypted files).
   # config.require_master_key = true
 
-  # Disable serving static files from `public/`, relying on NGINX/Apache to do so instead.
-  # config.public_file_server.enabled = false
+  # Enable static file serving from the `/public` folder (turn off if using NGINX/Apache for it).
+  config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
 
   # Compress CSS using a preprocessor.
   # config.assets.css_compressor = :sass
 
-  # Do not fall back to assets pipeline if a precompiled asset is missed.
+  # Do not fallback to assets pipeline if a precompiled asset is missed.
   config.assets.compile = false
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
@@ -51,9 +51,6 @@ Rails.application.configure do
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
 
-  # Skip http-to-https redirect for the default health check endpoint.
-  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
-
   # Log to STDOUT by default
   config.logger = ActiveSupport::Logger.new(STDOUT)
     .tap  { |logger| logger.formatter = ::Logger::Formatter.new }
@@ -62,7 +59,7 @@ Rails.application.configure do
   # Prepend all log lines with the following tags.
   config.log_tags = [ :request_id ]
 
-  # "info" includes generic and useful information about system operation, but avoids logging too much
+  # Info include generic and useful information about system operation, but avoids logging too much
   # information to avoid inadvertent exposure of personally identifiable information (PII). If you
   # want to log everything, set the level to "debug".
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
@@ -74,8 +71,6 @@ Rails.application.configure do
   # config.active_job.queue_adapter = :resque
   # config.active_job.queue_name_prefix = "patient_registration_api_production"
 
-  # Disable caching for Action Mailer templates even if Action Controller
-  # caching is enabled.
   config.action_mailer.perform_caching = false
 
   # Ignore bad email addresses and do not raise email delivery errors.
@@ -89,11 +84,21 @@ Rails.application.configure do
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
 
+  # Use default logging formatter so that PID and timestamp are not suppressed.
+  config.log_formatter = ::Logger::Formatter.new
+
+  # Use a different logger for distributed setups.
+  # require "syslog/logger"
+  # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new "app-name")
+
+  if ENV["RAILS_LOG_TO_STDOUT"].present?
+    logger           = ActiveSupport::Logger.new(STDOUT)
+    logger.formatter = config.log_formatter
+    config.logger    = ActiveSupport::TaggedLogging.new(logger)
+  end
+
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
-
-  # Only use :id for inspections in production.
-  config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
@@ -101,5 +106,56 @@ Rails.application.configure do
   #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
   # ]
   # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  # config.hosts_skip = [ "0.0.0.0", "::1" ]
+
+  # Email configuration for production
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.raise_delivery_errors = true
+
+  # Choose one of these SMTP configurations:
+
+  # Option 1: Gmail SMTP
+  # config.action_mailer.smtp_settings = {
+  #   address: 'smtp.gmail.com',
+  #   port: 587,
+  #   domain: 'gmail.com',
+  #   user_name: ENV['GMAIL_USERNAME'],
+  #   password: ENV['GMAIL_PASSWORD'],
+  #   authentication: 'plain',
+  #   enable_starttls_auto: true
+  # }
+
+  # Option 2: SendGrid
+  # config.action_mailer.smtp_settings = {
+  #   address: 'smtp.sendgrid.net',
+  #   port: 587,
+  #   domain: 'yourdomain.com',
+  #   user_name: 'apikey',
+  #   password: ENV['SENDGRID_API_KEY'],
+  #   authentication: 'plain',
+  #   enable_starttls_auto: true
+  # }
+
+  # Option 3: Mailgun
+  # config.action_mailer.smtp_settings = {
+  #   address: 'smtp.mailgun.org',
+  #   port: 587,
+  #   domain: ENV['MAILGUN_DOMAIN'],
+  #   user_name: ENV['MAILGUN_USERNAME'],
+  #   password: ENV['MAILGUN_PASSWORD'],
+  #   authentication: 'plain',
+  #   enable_starttls_auto: true
+  # }
+
+  # Option 4: Amazon SES
+  # config.action_mailer.smtp_settings = {
+  #   address: 'email-smtp.us-east-1.amazonaws.com',
+  #   port: 587,
+  #   domain: 'yourdomain.com',
+  #   user_name: ENV['AWS_SES_USERNAME'],
+  #   password: ENV['AWS_SES_PASSWORD'],
+  #   authentication: 'plain',
+  #   enable_starttls_auto: true
+  # }
 end

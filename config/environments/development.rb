@@ -39,6 +39,9 @@ Rails.application.configure do
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = true
 
+  # Use async adapter for development (override Sidekiq from application.rb)
+  config.active_job.queue_adapter = :async
+
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
 

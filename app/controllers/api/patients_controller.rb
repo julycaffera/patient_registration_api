@@ -4,6 +4,8 @@ module Api
       @patient = Patient.new(patient_params)
 
       if @patient.save
+        PatientMailer.confirmation_email(@patient).deliver_later
+
         render :create, status: :created
       else
         render json: {

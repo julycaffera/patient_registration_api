@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h1>Welcome, <%= @patient.name %>!</h1>
+    <p>
+      You have registered successfully!
+    </p>
+    <p>
+      Here are your registration details:
+    </p>
+    <ul>
+      <li><strong>Name:</strong> <%= @patient.name %></li>
+      <li><strong>Email:</strong> <%= @patient.email %></li>
+      <li><strong>Phone:</strong> <%= @patient.phone %></li>
+      <li><strong>Address:</strong> <%= @patient.address %></li>
+    </ul>
+    <p>
+      Thank you for choosing us.
+    </p>
+    <p>
+      Best regards,<br>
+      Registration Team
+    </p>
+  </body>
+</html> 

@@ -1,24 +1,78 @@
-# README
+# Patient Registration API
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A Rails API for patient registration with Docker environment setup.
 
-Things you may want to cover:
+## 🚀 Quick Start with Docker
 
-* Ruby version
+### 1. Start the Application
+```bash
+# Build and start all services
+docker compose build
+docker compose up -d
 
-* System dependencies
+# Verify all services are running
+docker compose ps
+```
 
-* Configuration
+### 2. Setup Database
+```bash
+# Create and migrate database
+docker compose exec web bundle exec rails db:create
+docker compose exec web bundle exec rails db:migrate
+```
 
-* Database creation
+### 3. Access the Application
+- **Web Application**: http://localhost:3000
+- **API Endpoints**: http://localhost:3000/api/patients
 
-* Database initialization
+## 🛠️ Development Commands
 
-* How to run the test suite
+### Rails Console
+```bash
+# Access Rails console
+docker compose exec web bundle exec rails console
 
-* Services (job queues, cache servers, search engines, etc.)
+# Inside console:
+Patient.all
+Patient.count
+patient = Patient.first
+patient.attributes
+```
 
-* Deployment instructions
+### Database Access
+```bash
+# Connect to PostgreSQL
+docker compose exec db psql -U patient_registration_api -d patient_registration_api_development
 
-* ...
+# Inside psql:
+\dt                    # List all tables
+\d patients           # Describe table structure
+SELECT * FROM patients; # View data
+\q                    # Exit psql
+```
+
+### Application Logs
+```bash
+# View Rails logs
+docker compose logs -f web
+
+# View database logs
+docker compose logs -f db
+```
+
+### Code Quality
+```bash
+# Run RuboCop
+docker compose exec web bundle exec rubocop
+```
+
+### Reset Everything
+```bash
+# Stop and remove everything
+docker compose down -v
+
+# Rebuild from scratch
+docker compose build --no-cache
+docker compose up -d
+docker compose exec web bundle exec rails db:create db:migrate
+```

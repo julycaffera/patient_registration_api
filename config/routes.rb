@@ -9,6 +9,10 @@ Rails.application.routes.draw do
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
+  # Sidekiq web interface for monitoring background jobs (production)
+  require "sidekiq/web"
+  mount Sidekiq::Web => "/sidekiq"
+
   # API routes for patient registration
   namespace :api do
     resources :patients, only: [ :create ]

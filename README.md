@@ -76,3 +76,98 @@ docker compose build --no-cache
 docker compose up -d
 docker compose exec web bundle exec rails db:create db:migrate
 ```
+
+# Patient Registration API Documentation
+
+## Overview
+This API allows you to register new patients with their personal information and document photo.
+
+## Base URL
+- Development: `http://localhost:3000`
+
+## Endpoints
+
+### POST /api/patients
+Register a new patient.
+
+#### Request
+- **Method**: POST
+- **Content-Type**: `application/json` or `multipart/form-data` (for file uploads)
+
+#### Parameters
+```json
+{
+  "patient": {
+    "name": "John Doe",
+    "email": "john@example.com",
+    "phone": "+1234567890",
+    "address": "123 Main Street, City, State 12345",
+    "document_photo": "[file upload]"
+  }
+}
+```
+
+#### Field Requirements
+- **name**: Required, 2-100 characters
+- **email**: Required, valid email format, must be unique
+- **phone**: Required, valid phone format (international format supported)
+- **address**: Required, 10-500 characters
+- **document_photo**: Required, image file
+
+#### Success Response Example
+```json
+{
+  "patient": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "phone": "+1234567890",
+    "address": "123 Main Street, City, State 12345",
+    "document_photo_url": "http://localhost:3000/rails/active_storage/blobs/...",
+    "created_at": "2024-01-15T10:30:00.000Z",
+    "updated_at": "2024-01-15T10:30:00.000Z"
+  }
+}
+```
+
+#### Error Response Example
+```json
+{
+  "message": "Registration failed",
+  "errors": [
+    "Name can't be blank",
+    "Email must be a valid email address",
+    "Phone must be a valid phone number",
+    "Address is too short (minimum is 10 characters)"
+  ]
+}
+```
+
+## Email Confirmation
+Upon successful registration, a confirmation email is sent to the patient's email address.
+
+### 📧 Email Development Setup
+Emails are saved locally using Letter Opener and can be viewed in your browser.
+
+#### View Sent Emails
+```bash
+# List all sent emails
+ls -la tmp/letter_opener/
+
+# Open the most recent email
+open tmp/letter_opener/$(ls -t tmp/letter_opener/ | head -1)/rich.html
+
+# Or manually open a specific email
+open tmp/letter_opener/[EMAIL_DIRECTORY]/rich.html
+```
+
+## Background Jobs
+- Email sending is handled by Sidekiq background jobs
+- Jobs are queued in Redis
+- Sidekiq web interface available at `/sidekiq`
+
+## Testing
+Run the test:
+```bash
+docker compose exec web bundle exec rspec
+``` 

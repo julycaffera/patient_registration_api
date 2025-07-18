@@ -30,11 +30,16 @@ services:
       retries: 5
 
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     environment:
       RAILS_ENV: development
+      BUNDLE_DEPLOYMENT: "0"
+      BUNDLE_WITHOUT: ""
+      BUNDLE_PATH: "/usr/local/bundle"
       DATABASE_URL: postgresql://patient_registration_api:password@db:5432/patient_registration_api_development
       REDIS_URL: redis://redis:6379/0
       RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
@@ -51,9 +56,14 @@ services:
     tty: true
 
   sidekiq:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
       RAILS_ENV: development
+      BUNDLE_DEPLOYMENT: "0"
+      BUNDLE_WITHOUT: ""
+      BUNDLE_PATH: "/usr/local/bundle"
       DATABASE_URL: postgresql://patient_registration_api:password@db:5432/patient_registration_api_development
       REDIS_URL: redis://redis:6379/0
       RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}

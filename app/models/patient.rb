@@ -8,6 +8,7 @@ class Patient < ApplicationRecord
   validates :phone, presence: true,
             format: { with: /\A\+?[\d\s\-\(\)]{7,20}\z/, message: "must be a valid phone number" }
   validates :address, presence: true, length: { minimum: 10, maximum: 500 }
+  validates :document_photo, presence: true
 
   before_save :normalize_email
 
